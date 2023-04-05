@@ -3,12 +3,12 @@
 #$ -o joblog.$JOB_ID
 #$ -j y
 #$ -l h_rt=0:30:00,h_data=10G
-#$ -l gpu
+#$ -l gpu,V100
 
 
 # load the job environment:
 . /u/local/Modules/default/init/modules.sh
-module load apptainer/1.0.0
+module load apptainer
 
 # Run singulariy as a single python3 command 
 # Container part: apptainer exec pytorch_22.03-py3.sif

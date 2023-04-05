@@ -9,7 +9,7 @@
 # load the job environment:
 . /u/local/Modules/default/init/modules.sh
 module load intel/2022.1.1
-module load apptainer/1.0.0
+module load apptainer
 
 echo "running 1 core"
 time  apptainer exec $H2_CONTAINER_LOC/h2-nwchem_7.0.2.sif nwchem water.nw  > water.SERIAL.out

@@ -4,8 +4,8 @@ import math
 
 
 dtype = torch.float
-device = torch.device("cpu")
-device = torch.device("cuda:0") # Uncomment this to run on GPU
+#device = torch.device("cpu")
+device = torch.device("cuda:0") 
 print(torch.cuda.is_available())
 print(torch.cuda.get_device_name(0))
 

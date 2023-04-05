@@ -1,7 +1,8 @@
 ---
-title: "Using Containers on HPC resources"
+title: "Using Containers on HPC Resources"
+subtitle: "Running Your Applications with Ease"
 author: "Charles Peterson"
-date: "April 20, 2022"
+date: "04-05-2023"
 format: 
   revealjs: 
     transition: slide
@@ -12,311 +13,504 @@ format:
 editor_options: 
   markdown: 
     wrap: 72
+from: markdown+emoji
 ---
 
-## Overview
+## Learning Objectives :dart:
+
+::: { style="font-size: 0.75em" }
 
 Welcome!
 
 In this workshop, we will go over using containers on HPC resources,
 like UCLA's Hoffman2
 
+::: {.fragment}
 ::: columns
-::: {.column .fragment width="60%"}
--   We will go over basic container concepts
+::: {.column width="70%"}
+- Understand the basics of containers :books:
+- Learn how containers can be used in HPC environments :computer:
+- Explore the benefits of containerization :rocket:
+- Get familiar with Apptainer and its workflow :hammer_and_wrench:
+- Discover best practices for using containers :white_check_mark:
 
--   Also, some basic examples of using containers on HPC resources
+::: {.fragment}
+- This is a Part I of my workshop on Containers.
 
--   Look more more advance container building in a future workshop!!
-:::
-
-::: {.column .fragment width="40%"}
-<img src="fullpic.png" width="30%"/>
-
-Any suggestions for upcoming workshops, email me at
-cpeterson\@oarc.ucla.edu
+- [Part II Next Wednesday on Building Container](https://idre.ucla.edu/calendar-event/building-containers-for-hpc)
 :::
 :::
 
-## Files for this Presentation
+::: {.column width="30%"}
+<img src="fullpic.png" width="70%"/>
 
-This presentation can be found on github under `container_04_18_2022`
-folder
+:::
+:::
+:::
+:::
 
-<https://github.com/ucla/hpc_workshops>
+## Files for this Presentation :file_folder:
 
-The `slides` folder has this slides.
+- Viewing the slides 
+  - HTML version: <https://ucla-oarc-hpc.github.io/WS_containers>
+  - PDF version: `WS_container.pdf`
+  - Quarto Markdown version: `WS_container.qmd`
 
-- PDF format: `ContainerWS.pdf`
-- html format: `html` directory 
-    - `ContainerWS.html`
 
-Note: This presentation was build with Quarto/Rstudio.
+- To download the presentation and example files, run the following command
 
--   Quarto file: `ContainerWS.qmd`
+```{.bash}
+git clone https://github.com/ucla-oarc-hpc/WS_containers
+```
 
-## What are Containers?
+# Containers: The Basics
 
-![](container_bare.png){.absolute top="100" left="100"}
+## Containers: The Basics :package: 
 
-## What are Containers?
+### What Are Containers?
 
-![](container_apps.png){.absolute top="100" left="100"}
+::: { style="font-size: 0.75em" }
 
-## What are Containers?
+- Consistency across platforms :heavy_check_mark:
+- Isolation from host system :lock:
+- Lightweight and portable :airplane:
 
-![](container_transfer.png){.absolute top="100" left="200"}
+:::
+
+<div style="display: flex; justify-content: center; align-items: center;">
+  <img src="container_bare.png"  />
+</div>
+
+
+
+## Containerizing Applications :hammer_and_wrench:
+
+::: { style="font-size: 0.75em" }
+
+Containers allow you to:
+
+- Package applications with their dependencies
+- Easily deploy and run them consistently across different systems.
+
+:::
+
+<div style="display: flex; justify-content: center; align-items: center;">
+  <img src="container_apps.png"  />
+</div>
+
+## Transferring Containers :truck:
+
+::: { style="font-size: 0.75em" }
+
+Containers can be:
+
+- Easily transferred between different HPC resources
+- Ensure consistent environment for your software
+
+:::
+
+<div style="display: flex; justify-content: center; align-items: center;">
+  <img src="container_transfer.png" width="60%" />
+</div>
+
 
 ::: footer
-Hoffman2 source - https://idre.ucla.edu/featured/hoffman2-brings-new-level-trust-researchers
-
-Stampede2 source - https://portal.tacc.utexas.edu/user-guides/stampede2
+Image Ref: [Hoffman2 source](https://idre.ucla.edu/featured/hoffman2-brings-new-level-trust-researchers), [Stampede2 source](https://portal.tacc.utexas.edu/user-guides/stampede2)
 :::
 
-## Virtualization
+## Understanding Virtualization :desktop_computer:
 
-To understand how Containers work, we will have a brief overview on
-virtualization
+- Containers provide a lightweight, portable, and consistent environment across different platforms.
 
+
+- To Understand Containers, we will first talk about Virtualization
+
+<p align="center">
+  <img src="matrix.gif" alt="Matrix GIF" width="120%">
+</p>
+
+![](matrix.gif)
+
+::: footer
+GIF from https://giphy.com/
+:::
+
+## Types of Virtualization :triangular_ruler:
+
+
+::: { style="font-size: 0.75em" }
+
+1. Hardware Virtualization
+   - Creates virtual machines with independent OS and resources on a single physical host.
+   - Example: VirtualBox, VMware, AWS EC2
+
+2. Operating System Virtualization (Containers)
+   - Allows multiple isolated user-space instances on the same OS kernel.
+   - Example: Docker, Apptainer, Kubernetes
+
+3. Application Virtualization
+   - Packages applications and their dependencies for execution on any compatible system.
+   - Example: App-V, ThinApp, Turbo
+
+:::
+
+## Bare Metal Setup: No Virtualization :computer:
+
+::: { style="font-size: 0.70em" }
+
+- 'Bare metal' refers to physical servers running directly on hardware without virtualization. :wrench:
+- Software and applications are installed directly on the host operating system. :cd:
+- Resources such as CPU, memory, and storage are dedicated and not shared with other virtual machines. :bar_chart:
+- Advantages: High performance, direct access to hardware, low overhead. :+1:
+- Limitations: Less flexibility, limited isolation between applications, potential underutilization of resources. :-1:
+
+::: {.fragment}
 ::: columns
-::: {.column .fragment width="60%"}
-**Bare computer setup**
+::: {.column width="60%"}
 
--   Typical setup in which your software applications run directly on
-    the OS from the **physical** hardware
+-   Software runs directly on OS from the **physical** hardware
 
--   Many HPC users run their applications in this fashion
+-   Typical applications are in this fashion
+    - Most `module load` software
+  
 :::
 
-::: {.column .fragment width="40%"}
-![](VMbare.png){.absolute top="400" left="700"}
+::: {.column width="40%"}
+![](VMbare.png)
+
+:::
+:::
 :::
 :::
 
-## Virtualization
+## Virtual Machines: Hardware-Level Virtualization :desktop_computer:
 
-Virtual Machine setup
+::: { style="font-size: 0.70em" }
 
+- Virtual machines (VMs) emulate physical computers and run multiple operating systems on a single host. :arrow_double_up:
+- Each VM has its own virtual hardware, including CPU, memory, and storage. :floppy_disk:
+- VMs are managed by a hypervisor (e.g., VirtualBox, VMware) that abstracts the physical hardware. :control_knobs:
+- VMs provide strong isolation between environments and are ideal for development, testing, and legacy applications. :shield:
+- Limitations: Additional overhead due to full OS in each VM, performance may be affected by virtualization layer. :hourglass_flowing_sand:
+
+
+::: {.fragment}
 ::: columns
-::: {.column .fragment width="60%"}
--   Applications running inside of a VM are running on a computely
+::: {.column  width="60%"}
+-   Applications running inside of a VM are running on a completely
     different set of (virtual) resources
-
-    -   Example: VirtualBox, VMWare, AWS EC2
 
 -   A "Machine" within a "Machine"
 :::
 
-::: {.column .fragment width="40%"}
-![](VM2.png){.absolute top="200" left="700"}
+::: {.column  width="40%"}
+![](VM2.png)
+:::
+:::
 :::
 :::
 
-## Virtualization
+## OS Virtualization: Containers :whale:
 
-Container Setup
+::: { style="font-size: 0.70em" }
 
+- OS virtualization with containers allows multiple, isolated user-space instances to run on a single host OS.
+- Containers share the host OS kernel but have their own file system, libraries, and dependencies.
+- Containers are lightweight, start quickly, and have lower overhead compared to VMs.
+- Containerization provides a consistent and reproducible environment across platforms.
+- Containers are ideal for microservices, cloud-native applications, and scalable deployments.
+
+::: {.fragment}
 ::: columns
-::: {.column .fragment width="60%"}
+::: {.column  width="60%"}
 -   Applications running inside of a container are running with the
     **SAME** kernal and physical resources as the host OS
 
 -   A "OS" within a "OS"
 :::
 
-::: {.column .fragment width="40%"}
-![](VMcontainer.png){.absolute top="200" left="700"}
+::: {.column  width="40%"}
+![](VMcontainer.png)
+:::
+:::
 :::
 :::
 
-## Why use Conatiners?
+## Why use Containers :question:
 
 ::: columns
-::: {.column width="40%"}
-- Bring your own OS
-
-- Portability
-
-- Reproducibility
-
-- Design your own environment
-
-- Version control 
+::: {.column width="50%"}
+- Bring your own OS :earth_americas:
+- Portability :airplane:
+- Reproducibility :repeat:
+- Design your own environment :art:
+- Version control :bookmark_tabs:
 :::
 
-::: {.column width="60%"}
+::: {.column width="50%"}
 ![](container1.png)
 :::
 :::
 
-## Problems installing software
 
--   Researchers typically have to spends lots of time installing
-    software in their personal (HOME) directories, load modules, every time
-    software is used
+## Challenges with Software Installation :hammer_and_wrench:
 
--   Then start all over when using software on a different HPC resource
+::: { style="font-size: 0.70em" }
+
+- Researchers face difficulties in managing software installations:
+  - Spend time setting up software on Hoffman2
+  - Figuring out which versions and modules to load for dependencies
+  - Having to wait for System Admins to help
+
+- Then start all over when using software on a different HPC resource
 
 ::: columns
 ::: {.column width="60%" .fragment}
-HPC resources (like Hoffman2) are **SHARED** resources
+HPC resources (like Hoffman2) are **SHARED** resources :busts_in_silhouette:
 
--   Researchers are running software on the same computing resource
-
--   No 'sudo' and limited yum/apt-get commands available
+- Researchers are running software on the same computing resource
+- No 'sudo' and limited yum/apt-get commands available :no_entry_sign:
 :::
 
 ::: {.column width="40%"}
 ![](container2.png)
 :::
 :::
+:::
 
-## Container Advantages
+## Container Advantages :sparkles:
 
-- Install your application once 
-  - Use on any HPC resource
+::: { style="font-size: 0.80em" }
+::: columns
+::: {.column  width="50%"}
 
-- A 'virtual' OS 
+- Install your application once:
+  - Use on any HPC resource :globe_with_meridians:
 
-  - users can have complete OS admin control
+- A 'virtual' OS:
+  - Users can have complete OS admin control :lock_with_ink_pen:
 
+:::
+::: {.column width="50%"}
+![](container3.png)
+:::
+:::
 ::: columns
 ::: {.column .fragment width="50%"}
--   Great to easily install software with apt/yum
+- Great for easily installing software with apt/yum :package:
 
--   Great if you software requires MANY dependencies that would be
-    complex installing on Hoffman2.
-
-    
+- Great if your software requires MANY dependencies that would be complex installing on Hoffman2. :chains:
 :::
 
 ::: {.column .fragment width="50%"}
-
-- Easily share containers!!
-    - containers as a .SIF file
-    - save to a Cloud Container Registry 
-      - [DockerHub](https://hub.docker.com/), [GitHub packages](https://github.com/features/packages), [Nvidia NGC](https://catalog.ngc.nvidia.com/)
-    
-
+- Easily share containers!! :handshake:
+  - Containers as a .SIF file
+  - Save to Container Registry:
+    - [DockerHub](https://hub.docker.com/), [GitHub packages](https://github.com/features/packages), [Nvidia NGC](https://catalog.ngc.nvidia.com/)
 :::
 :::
 
-![](container3.png){.absolute top="0" right="0"}
+:::
 
-## Software for Containers {.smaller}
+## Containerization vs. Traditional Deployment :balance_scale:
 
+::: { style="font-size: 0.80em" }
+
+- Traditional Deployment:
+  - Software dependencies must be installed on the host system. :file_folder:
+  - Conflicts can occur between different software versions. :warning:
+  - Challenging to achieve consistent environments across platforms. :chart_with_downwards_trend:
+
+- Containerization:
+  - Dependencies are packaged within the container. :gift:
+  - No conflicts with the host system or other containers. :peace_symbol:
+  - Consistent and reproducible environments on any platform. :chart_with_upwards_trend:
+  
+  
+:::
+
+## Software for Containers :wrench:
+
+::: { style="font-size: 0.70em" }
 ::: columns
 ::: {.column width="40%"}
 ![](word_cloud.png)
+
+
+Podman :package:
+
+- Similar syntax as with Docker
+- Doesn't have root daemon processes
+- On some HPC resources (not on Hoffman2, yet) :soon:
+
 :::
 
 ::: {.column width="60%"}
-Docker
 
--   One of the most popular containerize software
--   Many popular cloud container registries to store Docker containers
-    -   DockerHub, GitHub Packages, Nvidia NGC
--   MPI over multiple servers not well supported
--   Most likely NOT available on many HPC systems (not on Hoffman2)
+Docker :whale:
 
+- One of the most popular containerization software
+- Many popular cloud container registries to store Docker containers:
+  - DockerHub, GitHub Packages, Nvidia NGC
+- MPI over multiple servers not well supported :no_entry_sign:
+- Most likely NOT available on many HPC systems (not on Hoffman2) :x:
 
-::: {.fragment}
-Podman
-
--   Similar syntax as with Docker
--   Doesn't have a root daemon process
--   On some HPC resources (not on Hoffman2, yet)
-:::
 
 :::
 :::
+:::
 
-## Apptainer
+# Apptainer 
+
+ <img src="apptainer.png" />
+ 
+## Apptainer :rocket:
 
 ::: columns
-::: {.column width="50%"}
--   Formerly Singularity
--   Designed and developed for HPC systems
--   Mostly likely installed on HPC systems (installed on Hoffman2)
--   Supports Infiniband, GPUs, MPI, and other devices on the Host
--   Can run Docker containers
+::: {.column width="50%" style="font-size: 0.70em" }
+- Formerly Singularity
+- Designed and developed for HPC systems :desktop_computer:
+- Most likely installed on HPC systems (installed on Hoffman2) :white_check_mark:
+- Supports Infiniband, GPUs, MPI, and other devices on the Host :zap:
+- Can run Docker containers :whale2:
 :::
 
-::: {.column .fragment width="50%"}
-Security
+::: {.column .fragment width="50%" style="font-size: 0.70em"}
+Security considerations :shield:
 
-considerations
-
--   Built with shared user system environments in mind
--   NO daemon run by root
--   NO privilege escalation. Cannot gain control over host/Hoffman2
--   All permission restrictions outside of the a container apply to the
-    inside
+- Built with shared user system environments in mind
+- NO daemon run by root :no_entry_sign:
+- NO privilege escalation. Cannot gain control over host/Hoffman2 :lock:
+- All permission restrictions outside of a container apply to the inside :closed_lock_with_key:
 :::
 :::
 
-![](apptainer.png){.absolute top="0" right="0"}
+<div style="display: flex; justify-content: center; align-items: center;">
+  <img src="apptainer.png" width="75%" />
+</div>
 
-## Apptainer workflow 
+## Common Usage on Hoffman2 :bulb:
 
-::: columns
-::: {.column width="30%"}
-Create
+::: {style="font-size: 0.80em" }
 
-Transfer
+To use Apptainer on Hoffman2, simply load the module:
 
-Run
-:::
-
-::: {.column .fragment width="60%"}
-
-:::
-:::
-
-
-## Apptainer workflow (Create)
-
-::: columns
-::: {.column width="30%"}
-**Create**
-
-Transfer
-
-Run
-:::
-
-::: {.column .fragment width="60%"}
--   Build a container by installing Appainer on your computer (where you
-    have root/sudo access) to create a container
-
--   Use a pre-built container
-
-    -   Search Container Registries for container
-    -   DockerHub, GitHub packages, Nvidia NGC
-:::
-:::
-
-## Apptainer workflow (Transfer)
-
-::: columns
-::: {.column width="30%"}
-Create
-
-**Transfer**
-
-Run
-:::
-
-::: {.column .fragment width="60%"}
-Bring your container to Hoffman2
-
--   Copy your container to Hoffman2
-
-```{.bash }
-scp test.sif H2USERNAME@hoffman2.idre.ucla.edu
+```{.bash}
+module load apptainer
 ```
 
--   Pull a container from online Container Register
+- Only module you need to load!
+  - Except for a MPI module if running parallel
+
+::: {.fragment}
+
+### Common Apptainer Commands:
+
+1. Getting a container from somewhere
+
+```{.bash}
+apptainer pull [options]
+apptainer pull docker://ubuntu:20.04
+```
+
+2. Build a container
+
+```{.bash}
+apptainer build [options]
+apptainer build myapp.sif myapp.def
+```
+
+:::
+:::
+
+## Common Usage Continued :wrench:
+
+Common Apptainer commands:
+
+3. Run a command within a container
+
+```{.bash}
+apptainer exec [options] container.sif
+apptainer exec mypython.sif python3 test.py
+# Runs the command `python3 test.py` inside the container
+```
+
+4. Start an interactive session inside your container
+
+```{.bash}
+apptainer shell [options] container.sif
+apptainer shell mypython.sif
+```
+
+::: {.fragment}
+
+::: {.callout-note}
+Apptainer will NOT run on Hoffman2 login nodes.
+:::
+:::
+
+## Apptainer Workflow for running on H2 :arrows_counterclockwise:
+
+::: columns
+::: {.column width="30%"}
+1. Create :hammer_and_wrench:
+
+2. Transfer :arrow_right_hook:
+
+3. Run :arrow_forward:
+:::
+
+::: {.column .fragment width="60%"}
+
+:::
+:::
+
+
+
+## Apptainer Workflow (Create) :hammer_and_wrench:
+
+::: columns
+::: {.column width="30%"}
+**1. Create** :hammer_and_wrench:
+
+2. Transfer
+
+3. Run
+:::
+
+::: {.column .fragment width="60%" style="font-size: 0.80em"}
+- Build a container 
+  - From Apptainer or Docker on your computer 
+  - Where you have root/sudo access
+
+- Use a pre-built container:
+  - Search Container Registries 
+  - [DockerHub](https://hub.docker.com/), [GitHub packages](https://github.com/features/packages), [Nvidia NGC](https://catalog.ngc.nvidia.com/)
+  - On H2, `$H2_CONTAINER_LOC`
+:::
+:::
+
+
+## Apptainer Workflow (Transfer) :arrow_right_hook:
+
+::: columns
+::: {.column width="30%"}
+1. Create
+
+**2. Transfer** :arrow_right_hook:
+
+3. Run
+:::
+
+::: {.column .fragment width="60%" style="font-size: 0.80em"}
+Bring your container to Hoffman2:
+
+- Copy your container to Hoffman2
+```{.bash }
+scp test.sif username@hoffman2.idre.ucla.edu
+```
+
+-   Pull a container from Container Register
 
 ```{.bash }
 apptainer pull docker://ubuntu:20.04
@@ -325,14 +519,14 @@ apptainer pull docker://ubuntu:20.04
 -   Use a container pre-built on Hoffman2
 
 ```{.bash }
-#Pre-built container location on Hoffman2
+module load apptainer
 ls $H2_CONTAINER_LOC
 ```
 
 :::
 :::
 
-## Apptainer workflow (Run)
+## Apptainer workflow (Run) :arrow_forward:
 
 ::: columns
 ::: {.column width="30%"}
@@ -340,96 +534,45 @@ Create
 
 Transfer
 
-**Run**
+**Run** :arrow_forward:
 :::
 
-::: {.column .fragment width="60%"}
-Run Apptainer on your container
+::: {.column .fragment width="60%" style="font-size: 0.80em"}
+Run Apptainer on your container:
 
-Can run in an interactive (qrsh) session
+- Can run in an interactive (qrsh) session
 
 ```{.bash}
 qrsh -l h_data=5G
-module load apptainer/1.0.0
+module load apptainer
 apptainer exec mypython.sif python3 test.py
 ```
 
-Or run as a Batch (qsub) job
+- Or run as a Batch (qsub) job
+
+- Create job script `myjob.job`
 
 ```{.bash}
-cat << EOF >> myjob.job
-module load apptainer/1.0.0
+#!/bin/bash
+#$ -l h_data=10G
+module load apptainer
 apptainer exec mypython.sif python3 test.py
-EOF
+```
 
+- Submit your job
+
+```{.bash}
 qsub -l h_data=5G myjob.job
 ```
 
 :::
 :::
 
-::: {.fragment}
-Apptainer container run like any other application
+## **MAJOR TAKEWAY** :star:
 
-Just add an apptainer command to any command you wanted to run inside the container.
-
-:::
-
-## Common Usage
-
-On Hoffman2, to use apptainer, all you need to do is load the module
-
-```{.bash}
-module load apptainer/1.0.0
-```
-
--   Only module you need to load!
-
-    -   Expect MPI module if running parallel
-
-Common Apptainer commands:
-
--   Getting a container from somewhere
-
-```{.bash}
-apptainer pull [options]
-apptainer pull docker://ubuntu:20.04
-```
-
-- Build a container
-
-```{.bash}
-apptainer build [options]
-apptainer build myapp.sif myapp.def
-```
-
-## Common Usage
-
-
-Common Apptainer commands:
-
--   Run a command within a container
-
-```{.bash}
-apptainer exec [options] container.sif
-apptainer exec mypython.sif python3 test.py
-# Runs the command `python3 test.py` inside the container
-```
-
--   Start an interactive session inside your container
-
-```{.bash}
-apptainer shell [options] container.sif
-apptainer shell mypython.sif
-```
-
-NOTE: Apptainer will NOT run on Hoffman2 login nodes.
-
-
-## **MAJOR TAKEWAY**
-
-
-You will run the same commands as you normally do, just add the `apptainer shell/exec container.sif` line in front of your command
+- Apptainer containers run like any other application. 
+- Run the same commands as you normally would
+  - Just add an Apptainer command to any command you want to run inside the container
 
 So....
 
@@ -438,7 +581,7 @@ python3 test.py
 R CMD BATCH test.R
 ```
 
-Turns into to
+Turns into
 
 ```{.bash}
 apptainer exec myPython.sif python3 test.py
@@ -446,89 +589,195 @@ apptainer exec myR.sif R CMD BATCH test.R
 ```
 
 
-# Examples
+# Examples 
 
--   Example 1: Simple container jobs
--   Example 2: Using GPUs
--   Example 3: Using MPI
--   Example 4: Simple custom build container
+-   Example 1: Simple containers with TensorFlow
+-   Example 2: GPU containers with PyTorch
+-   Example 3: Parallel MPI containers
 
+You can find the workshop material here:
+
+```{.bash}
+git clone https://github.com/ucla-oarc-hpc/WS_containers
+```
+
+
+## Example 1: TensorFlow (1) :brain:
+
+::: {style="font-size: 0.80em"}
+
+-This example will use [Tensorflow](https://www.tensorflow.org/)
+
+  - Great library for developing Machine Learning models
+
+::: {.columns .fragment}
+::: {.column }
+
+- We will use the [MNIST](https://en.wikipedia.org/wiki/MNIST_database) dataset
+  - Data of over 60,000 training images of handwritten digts
+
+:::
+::: {.column }
+
+![](mnist.png)
+:::
+:::
+
+::: { .fragment}
+We will use TensorFlow to train a model from this dataset
+:::
+:::
+
+
+## Example 1: TensorFlow (2) 
+
+::: {style="font-size: 0.75em"}
+
+- Go to `EX1` directory
+- Look at `tf-example.py`
+  - This example uses TF to train from the MINIST data
 
 ::: {.fragment}
 
-Workshop material 
+Normally, to run this job, we will run
 
 ```{.bash}
-git clone https://github.com/ucla/hpc_workshops
-cd hpc_workshops/containerWS-04202022
+module load python
+python3 tf-example.py
 ```
 
 :::
 
-## Example 1: TensorFlow
-
-This example will use [Tensorflow](https://www.tensorflow.org/)
-
-A great library for develop Machine Learning models
-
-- Go to `EX1` directory
-- Look at `tf-example.py`
-  - Simple example to train [MNIST](http://yann.lecun.com/exdb/mnist/) dataset 
-
 ::: {.fragment}
 
-To run this job, we will run
+IT DOESN'T WORK!!! Need tensorflow installed!!!
 
-```{.bash}
-python3 tf-example.py
-```
+::: {.fragment style="font-size: 0.70em"}
 
-Need tensorflow!!!
+- You can install it your yourself (via pip/conda maybe?)
+  - Maybe errors with building
+  - Have to build again using another computer
 
--   Instead of installing it yourself, let is find a container
+:::
+::: {.fragment style="font-size: 0.70em"}
 
-Visit [DockerHub](https://hub.docker.com/)
-
+- Instead of installing it yourself, let is find a container!
+  - Visit [DockerHub](https://hub.docker.com/)
+  
+:::
 ::: 
+:::
 
-## Example 1: TensorFlow (interactive)
+## Example 1: TensorFlow (3)
+### Interactive
 
-Running on Hoffman2
+::: { style="font-size: 0.72em"}
+::: columns 
+::: {.column width="50%" .fragment}
 
--   Start an interactive session
+- Start an interactive session
+
+:::
+::: {.column width="50%" .fragment}
 
 ```{.bash}
 qrsh -l h_data=10G
 ```
 
--   load the apptainer module
+:::
+:::
+
+::: columns 
+::: {.column width="50%" .fragment}
+
+- Load the apptainer module
+
+::: 
+::: {.column width="50%" .fragment}
 
 ```{.bash}
-module load apptainer/1.0.0
+module load apptainer
 ```
 
--   pull the TensorFlow container from DockerHub
+:::
+:::
+
+::: columns 
+::: {.column width="50%" .fragment}
+
+- Pull the TF container from DockerHub
+
+::: 
+::: {.column width="50%" .fragment}
 
 ```{.bash}
 apptainer pull docker://tensorflow/tensorflow:2.7.1
 ```
 
--   We see a SIF file named, tensorflow_2.7.1.sif
+:::
+:::
+
+::: {.fragment}
+
+- We see a file named, `tensorflow_2.7.1.sif`
+   - This SIF file is the container
+   - This container is a OS with python and TF installed inside
+
+:::
+::: columns 
+::: {.column width="50%" .fragment}
 
 -   Start an interactive shell **INSIDE** the container
+
+::: 
+::: {.column width="50%" .fragment}
 
 ```{.bash}
 apptainer shell tensorflow_2.7.1.sif
 python3 tf-example.py
 ```
 
-## Example 1: TensorFlow (batch)
+:::
+:::
+::: columns 
+::: {.column width="50%" .fragment}
 
-Run a command inside the container
+- Now we are in the container, we can run python with TF!
+
+::: 
+::: {.column width="50%" .fragment}
+
+```{.bash}
+python3 tf-example.py
+```
+
+:::
+:::
+::: {.fragment}
+
+::: {.callout-tip}
+
+- See that we didn't need to load any python module!
+- We didn't need to install any TF packages ourselves!!
+- Everything is inside the container!
+
+:::
+:::
+:::
+
+## Example 1: TensorFlow (4)
+### Batch
+
+::: { style="font-size: 0.72em"}
+
+- Going interactively inside the container (Previous slide)
+  - `apptainer shell [container.sif]`
+- Run a single command in the container
+  - `apptainer exec [container.sif] [command]`
 
 ```{.bash}
 qrsh -l h_data=10G
-module load apptainer/1.0.0
+module load apptainer
 apptainer pull docker://tensorflow/tensorflow:2.7.1
 apptainer exec tensorflow_2.7.1.sif python3 tf-example.py
 ```
@@ -536,7 +785,7 @@ apptainer exec tensorflow_2.7.1.sif python3 tf-example.py
 ::: {.fragment}
 Alternatively, you can submit this as a batch job
 
--   Example job script: `tf-example.job`
+- Example job script: `tf-example.job`
 
 ```{.bash}
 qsub tf-example.job
@@ -544,324 +793,189 @@ qsub tf-example.job
 
 :::
 
+:::
+
+## Example 2: GPUs with PyTorch (1) :fireworks:
+
+::: { style="font-size: 0.65em"}
+
+- This example uses [PyTorch](https://pytorch.org/) with GPU support for faster speed :rocket:
+  - Another great Machine Learning framework
+
+::: columns 
+::: {.column width="50%"}
+
+- Go to the `EX2` directory
+  - Examine the `pytorch_gpu.py` file
+  - Optimize a 3rd order polynomial to a sine function
+
 ::: {.fragment}
+- To run this example, we'll need to find a container with GPU support!
+  - Let us go to [Nvidia GPU Cloud (NGC)](https://catalog.ngc.nvidia.com/)
+  - Containers built by Nvidia for GPUs
 
-NOTE:
+:::
+:::
+::: {.column width="50%"}
 
--   See that we didn't need to load any python module!
--   We didn't need to install any TF packages ourselves!!
+![](training_animation.gif)
+
+:::
+:::
 
 :::
 
-## Example 2: GPU containers (PyTorch)
+## Example 2: GPU job (2)
 
-This example uses [PyTorch](https://pytorch.org/) with GPU support for faster speed.
+::: { style="font-size: 0.75em"}
 
-PyTorch is another great Machine Learning framework.
+Let's run `python3 tf-example.py` on a GPU node
 
-Look under `EX2`
+::: columns 
+::: {.column width="50%" .fragment}
 
-- File: `pytorch_gpu.py`
-
-This example will optimize a polynomial to a sine function
-
-:::{.fragment}
-
-Let us go to [Nvidia GPU Cloud (NGC)](https://catalog.ngc.nvidia.com/)
-
--   Containers built by Nvidia
--   Optimized for GPU jobs
-
+- Start an interactive session with a GPU compute node
 :::
-
-## Example 2: GPU job
-
-First, you will need a GPU compute node
+::: {.column width="50%" .fragment}
 
 ```{.bash}
-qrsh -l h_data=10G,gpu
+qrsh -l h_data=10G,gpu,V100
 ```
 
-Download PyTorch from Nvidia NGC
+:::
+:::
+::: columns 
+::: {.column width="50%" .fragment}
+
+- Download the PyTorch container from Nvidia NGC
+
+:::  
+::: {.column width="50%" .fragment}
 
 ```{.bash}
-module load apptainer/1.0.0
+module load apptainer
 apptainer pull docker://nvcr.io/nvidia/pytorch:22.03-py3
 ```
 
-Run apptainer with the `--nv` option. This option will find the GPU
-drivers from Host compute node
+:::
+:::
+::: columns 
+::: {.column width="50%" .fragment}
 
--   See if container can find the GPUs
+- Run apptainer with the `--nv` option. 
+  - This enables the container to use the host's GPU drivers
+  
+:::
+::: {.column width="50%" .fragment}
 
 ```{.bash}
-apptainer shell pytorch_22.03-py3 
+apptainer shell --nv pytorch_22.03-py3 
+python -c "import tensorflow as tf; print('GPU is available' if tf.test.is_gpu_available() else 'GPU is NOT available')"
+```
 
+:::
+:::
+::: columns 
+::: {.column width="50%" .fragment}
+
+- Run python3 as a single command
+
+:::
+::: {.column width="50%" .fragment}
+
+```{.bash}
 apptainer exec --nv tensorflow_2.7.1.sif python3 tf-example.py
 ```
 
-:::{.fragment}
+:::
+:::
+::: columns 
+::: {.column width="50%" .fragment}
 
-Alternatively, you can submit this as a batch job
+Alternatively, you can submit this as a batch job using a job script
+
+:::
+::: {.column width="50%" .fragment}
 
 ```{.bash}
 qsub pytorch_gpu.job
 ```
 
 :::
+:::
+:::
 
-## Example 3: Parallel MPI containers
+## Example 3: Parallel MPI containers :globe_with_meridians:
 
-One of my fav Computational Chemistry application is [NWChem](https://nwchemgit.github.io/)
+::: { style="font-size: 0.75em"}
 
-This example will run a parallel MPI container
+In this example, we'll run a parallel MPI container using [NWChem](https://nwchemgit.github.io/), a popular computational chemistry application.
 
-- Many applications use MPI to run over many CPUs.
+Many applications use MPI to run across multiple CPUs, and NWChem is one of them.
 
 :::{.fragment}
 
-On Hoffman2, we have already built a NWChem container with MPI
+- On Hoffman2, a NWChem container with MPI has already been built
+  - `$H2_CONTAINER_LOC/h2-nwchem_7.0.2.sif`
 
-- `$H2_CONTAINER_LOC/h2_nwchem:7.0.2.sif`
-
-Run the Parallel NWChem job
-
-```{.bash}
-qsub nwchem-MPI.job
-```
-
-:::
-
-## Example 3: Parallel MPI containers
-
-NOTE: Typically, you will run MPI application by following the format
+Typically, we will run NWChem like this:
 
 ```{.bash}
 module load intel/2022.1.1
-mpirun myapp.x
+module load nwchem/7.0.2
+`which mpirun` nwchem water.nw > water.out
 ```
 
-Inside the container, you have mpirun before the `apptainer` command
+To run inside the container:
+
+- Load the intel module
+  - Sets up (INTEL)MPI on the host (outside the container)
+- Add `mpirun` in front of `apptainer exec`
 
 ```{.bash}
 module load intel/2022.1.1
-module load apptainer/1.0.0
-mpirun apptainer exec myapp.sif myapp.x
+`which mpirun` apptainer exec $H2_CONTAINER_LOC/h2-nwchem_7.0.2.sif nwchem water.nw  > water.out
 ```
 
-For running MPI inside the container, you **MUST** have MPI on the Host (outside of the container). 
+A example batch job is located in `EX3/nwchem.job`
 
-In this case, `intel/2022.1.1` will have IntelMPI
+```{.bash}
+qsub nwchem.job
+```
 
-## Example 4: Building container
-
-
-I coded a chemistry app located on github
-
--   [https://github.com/charliecpeterson/QUILL](https://github.com/charliecpeterson/QUILL)
-
-We need:
-
--   Python with the PySCF package
--   Eigen3
-
-![](quill.jpg){.absolute top="0" right="0" width="200" height="250"}
-
-::: columns
-::: {.column .fragment width="50%"}
-Instead of installing these dependencies on H2 (or looking for modules),
-lets build a container!!
-:::
-
-::: {.column .fragment width="50%"}
-Build using three methods
-
--   Writable sandbox 
--   Using a definition file (.def)
--   Using Docker (Dockerfile)
 :::
 :::
 
-## Example 4
+## Considerations and Best Practices
 
-For this example, you will need Apptainer and/or Docker installed on a machine that you have admin/sudo access.
-
-In order to build or modify containers, you must have admin access
-
-- So you cannot do this on Hoffman2
-
+::: { style="font-size: 0.75em"}
 :::{.fragment}
 
-You may use `wscontainers.ova` VM to use with VirtualBox. Both Apptainer and Docker pre-installed.
-
-- Username & password : wscontainer
-
-You can find how to install this software on your own from the `install.md` file.
+- :package: Size of container 
+  - Keep it small and minimal
+  - Include only necessary components for your applications
+  - Large containers need more memory and take longer to start up
 
 :::
-
-## Example 4: Method 1 - Writable Sandbox
-
-This example will create a container by installing software inside of a
-container interactively
-
--   Create a writable container, starting from base ubuntu image. We will call is container, `quill.sif`
-
-```{.bash}
-sudo apptainer build --sandbox quill_SB docker://ubuntu:20.04
-```
-
--   Go inside the writable container (Modifications will be saved)
-
-```{.bash}
-sudo apptainer shell --writable quill_SB
-```
-
-## Example 4: Method 1 - Writable Sandbox
-
--   Install QUILL
-
-```{.bash}
-apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-       git python3 python3-dev python3-pip \
-       libeigen3-dev ca-certificates cmake make gcc g++
-rm -rf /var/lib/apt/lists/*
-
-pip3 install pyscf
-ln -s /usr/bin/python3 /usr/bin/python
-mkdir -pv /apps
-cd /apps
-git clone https://github.com/charliecpeterson/QUILL
-cd QUILL
-mkdir build ; cd build
-cmake ..
-exit
-```
-
-Move final container to Hoffman2
-
-```{.bash}
-#Convert Sanbox to SIF
-sudo apptainer build QUILL.sif QUILL_SB
-scp -r QUILL.sif H2USERNAME@hoffman2.idre.ucla.edu
-```
-
-## Example 4: Method 2: Definition file
-
-Install QUILL with a Definition file
-
-Look at `quill.def`
-
-This file has all steps needed to build the QUILL container.
-
-```{.bash}
-sudo apptainer build quill.sif quill.def
-```
-
-The `quill.sif` container is created
-
-
-Move container to Hoffman2
-
-```{.bash}
-scp QUILL.sif H2USERNAME@hoffman2.idre.ucla.edu
-```
-
-
-## Example 4: Method 3: Docker
-
-You can use Docker to create containers for apptainer
-
-The `Dockerfile-quill` file is used by Docker to create the container
-
-```{.bash}
-sudo docker build . -t quill:1.0 -f Dockerfile-quill
-```
-
-See built docker container
-
-```{.bash}
-sudo docker image list
-```
-
-Save docker image to apptainer container
-
-```{.bash}
-sudo docker save quill:1.0 > quill.tar
-apptainer build QUILL.sif docker-archive://quill.tar
-scp QUILL.sif H2USERNAME@hoffman2.idre.ucla.edu
-```
-
 :::{.fragment}
 
-Alternatively, you can `docker push` your container to DockerHub, GitHub, etc and run `docker pull` on Hoffman2.
+- :busts_in_silhouette: Share .sif files with your friends!
+  - :wrench: Experiment creating your containers
+  - Save your (Docker) containers to DockerHub or GitHub Packages
+  - Find examples of Dockerfiles and Apptainer def files on [our GitHub](https://github.com/charliecpeterson/containers)
 
 :::
-
-
-## Example 4: Running Container
-
-Once the container is on Hoffman2, submit job.
-
-```{.bash}
-qsub quill.job
-```
-
 :::{.fragment}
 
-More information on using Definition files 
-
-- [https://apptainer.org/docs/user/1.0/definition_files.html](https://apptainer.org/docs/user/1.0/definition_files.html)
-
-
-More information on using Dockerfiles
-
-- [https://docs.docker.com/engine/reference/builder/](https://docs.docker.com/engine/reference/builder/)
+- :mag: Look out for a follow-up workshop
+  - [Container Building](https://idre.ucla.edu/calendar-event/building-containers-for-hpc)
 
 :::
-
-## Things to Think About
-
-Size of container
-
-- Try to keep the size of your container small and minimal
-
-    - Only have the things necessary for your applications to run
-
-- Large containers will need more **memory** and will take more take to
-    start up
-
-::: {.fragment}
-- Currently, the non-setid version of Appatiner will convert all .sif files to sandbox before running - Large containers can increase the conversion time.
-
-- Good idea to build a sandbox container before running appainer to
-    save time
-
-```{.bash}
-appatiner build --sandbox test-sandbox/ test.sif
-```
-
-:::
-
-## More Things to Think About
-
--   Share .sif files with your friends!
-    -   Save your (Docker) containers to DockerHub or GitHub Packages
--   Find examples of Dockerfiles and Apptainer def files on my GitHub
-    -   [https://github.com/charliecpeterson/containers](https://github.com/charliecpeterson/containers)
-
-:::{.fragment}
-
-- Experiment creating your containers with writable sandboxs, then create Def/Dockerfile to with all your commands so to rebuild/modify containers later
-
--   Look out for a follow-up workshop
-    -   Container Building
 :::
 
 # Thank you!
 
-Questions? Comments?
+Questions? Comments? :thinking:
 
 Charles Peterson
 [cpeterson\@oarc.ucla.edu](mailto:cpeterson@oarc.ucla.edu){.email}
