@@ -35,7 +35,7 @@ like UCLA's Hoffman2
 - Discover best practices for using containers :white_check_mark:
 
 ::: {.fragment}
-- This is a Part I of my workshop on Containers.
+- This is Part I of my workshop on Containers.
 
 - [Part II Next Wednesday on Building Container](https://idre.ucla.edu/calendar-event/building-containers-for-hpc)
 :::
@@ -478,10 +478,11 @@ Apptainer will NOT run on Hoffman2 login nodes.
 3. Run
 :::
 
-::: {.column .fragment width="60%" style="font-size: 0.80em"}
+::: {.column .fragment width="60%" style="font-size: 0.75em"}
 - Build a container 
   - From Apptainer or Docker on your computer 
   - Where you have root/sudo access
+  - Typically, Apptainer containers end in `.sif`
 
 - Use a pre-built container:
   - Search Container Registries 
@@ -562,7 +563,7 @@ apptainer exec mypython.sif python3 test.py
 - Submit your job
 
 ```{.bash}
-qsub -l h_data=5G myjob.job
+qsub myjob.job
 ```
 
 :::
