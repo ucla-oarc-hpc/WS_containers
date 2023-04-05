@@ -2,7 +2,7 @@
 #$ -cwd
 #$ -o joblog.$JOB_ID
 #$ -j y
-#$ -l h_rt=0:30:00,h_data=10G
+#$ -l h_rt=0:30:00,h_data=20G
 #$ -l gpu,V100
 
 

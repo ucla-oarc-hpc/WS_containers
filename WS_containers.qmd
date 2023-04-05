@@ -543,7 +543,7 @@ Run Apptainer on your container:
 - Can run in an interactive (qrsh) session
 
 ```{.bash}
-qrsh -l h_data=5G
+qrsh -l h_data=20G
 module load apptainer
 apptainer exec mypython.sif python3 test.py
 ```
@@ -554,7 +554,7 @@ apptainer exec mypython.sif python3 test.py
 
 ```{.bash}
 #!/bin/bash
-#$ -l h_data=10G
+#$ -l h_data=20G
 module load apptainer
 apptainer exec mypython.sif python3 test.py
 ```
@@ -606,7 +606,7 @@ git clone https://github.com/ucla-oarc-hpc/WS_containers
 
 ::: {style="font-size: 0.80em"}
 
--This example will use [Tensorflow](https://www.tensorflow.org/)
+- This example will use [Tensorflow](https://www.tensorflow.org/)
 
   - Great library for developing Machine Learning models
 
@@ -663,6 +663,7 @@ IT DOESN'T WORK!!! Need tensorflow installed!!!
 
 - Instead of installing it yourself, let is find a container!
   - Visit [DockerHub](https://hub.docker.com/)
+  - ["Official" TensorFlow container](https://hub.docker.com/r/tensorflow/tensorflow)
   
 :::
 ::: 
@@ -681,7 +682,7 @@ IT DOESN'T WORK!!! Need tensorflow installed!!!
 ::: {.column width="50%" .fragment}
 
 ```{.bash}
-qrsh -l h_data=10G
+qrsh -l h_data=20G
 ```
 
 :::
@@ -734,7 +735,6 @@ apptainer pull docker://tensorflow/tensorflow:2.7.1
 
 ```{.bash}
 apptainer shell tensorflow_2.7.1.sif
-python3 tf-example.py
 ```
 
 :::
@@ -776,7 +776,7 @@ python3 tf-example.py
   - `apptainer exec [container.sif] [command]`
 
 ```{.bash}
-qrsh -l h_data=10G
+qrsh -l h_data=20G
 module load apptainer
 apptainer pull docker://tensorflow/tensorflow:2.7.1
 apptainer exec tensorflow_2.7.1.sif python3 tf-example.py
@@ -829,7 +829,7 @@ qsub tf-example.job
 
 ::: { style="font-size: 0.75em"}
 
-Let's run `python3 tf-example.py` on a GPU node
+Let's run `python3 pytorch_gpu.py` on a GPU node
 
 ::: columns 
 ::: {.column width="50%" .fragment}
@@ -839,7 +839,7 @@ Let's run `python3 tf-example.py` on a GPU node
 ::: {.column width="50%" .fragment}
 
 ```{.bash}
-qrsh -l h_data=10G,gpu,V100
+qrsh -l h_data=20G,gpu,V100
 ```
 
 :::
@@ -869,8 +869,8 @@ apptainer pull docker://nvcr.io/nvidia/pytorch:22.03-py3
 ::: {.column width="50%" .fragment}
 
 ```{.bash}
-apptainer shell --nv pytorch_22.03-py3 
-python -c "import tensorflow as tf; print('GPU is available' if tf.test.is_gpu_available() else 'GPU is NOT available')"
+apptainer shell --nv pytorch_22.03-py3.sif
+python3 -c "import torch; print(f'GPU is available: {torch.cuda.get_device_name(0)}' if torch.cuda.is_available() else 'GPU is NOT available')"
 ```
 
 :::
@@ -884,7 +884,7 @@ python -c "import tensorflow as tf; print('GPU is available' if tf.test.is_gpu_a
 ::: {.column width="50%" .fragment}
 
 ```{.bash}
-apptainer exec --nv tensorflow_2.7.1.sif python3 tf-example.py
+apptainer exec --nv pytorch_22.03-py3.sif python3 pytorch_gpu.py
 ```
 
 :::
@@ -923,7 +923,7 @@ Typically, we will run NWChem like this:
 ```{.bash}
 module load intel/2022.1.1
 module load nwchem/7.0.2
-`which mpirun` nwchem water.nw > water.out
+`which mpirun` -np 5 nwchem water.nw > water.out
 ```
 
 To run inside the container:
@@ -933,8 +933,9 @@ To run inside the container:
 - Add `mpirun` in front of `apptainer exec`
 
 ```{.bash}
+qrsh -l h_data=10,arch=intel-gold* -pe shared 5
 module load intel/2022.1.1
-`which mpirun` apptainer exec $H2_CONTAINER_LOC/h2-nwchem_7.0.2.sif nwchem water.nw  > water.out
+`which mpirun` -np 5 apptainer exec $H2_CONTAINER_LOC/h2-nwchem_7.0.2.sif nwchem water.nw  > water.out
 ```
 
 A example batch job is located in `EX3/nwchem.job`
