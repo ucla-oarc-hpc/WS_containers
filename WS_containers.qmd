@@ -2,17 +2,10 @@
 title: "Using Containers on HPC Resources"
 subtitle: "Running Your Applications with Ease"
 author: "Charles Peterson"
-date: "04-05-2023"
 format: 
   revealjs: 
     transition: slide
-    theme: simple
-    auto-stretch: false
-    self-contained: true
-    scrollable: true
-editor_options: 
-  markdown: 
-    wrap: 72
+    theme: [custom.scss]
 from: markdown+emoji
 ---
 
@@ -20,7 +13,7 @@ from: markdown+emoji
 
 ::: { style="font-size: 0.75em" }
 
-Welcome!
+**Welcome!**
 
 In this workshop, we will go over using containers on HPC resources,
 like UCLA's Hoffman2
@@ -37,7 +30,7 @@ like UCLA's Hoffman2
 ::: {.fragment}
 - This is Part I of my workshop on Containers.
 
-- [Part II Next Wednesday on Building Container](https://idre.ucla.edu/calendar-event/building-containers-for-hpc)
+- [Part II Next Wednesday on Building Container](https://idre.ucla.edu/calendar-event/building-containers-for-hpc-2)
 :::
 :::
 
@@ -49,7 +42,10 @@ like UCLA's Hoffman2
 :::
 :::
 
+
 ## Files for this Presentation :file_folder:
+
+This presentation can be found on our GitHub page
 
 - Viewing the slides 
   - HTML version: <https://ucla-oarc-hpc.github.io/WS_containers>
@@ -57,7 +53,7 @@ like UCLA's Hoffman2
   - Quarto Markdown version: `WS_container.qmd`
 
 
-- To download the presentation and example files, run the following command
+- To download the presentation and example files, run the following command (this will download the files from GitHub):
 
 ```{.bash}
 git clone https://github.com/ucla-oarc-hpc/WS_containers
@@ -72,8 +68,11 @@ git clone https://github.com/ucla-oarc-hpc/WS_containers
 ::: { style="font-size: 0.75em" }
 
 - Consistency across platforms :heavy_check_mark:
+  - Software runs the same way, regardless of where the container is executed.
 - Isolation from host system :lock:
+  - Containers do not interfere with other containers or with the host, ensuring a secure execution environment.
 - Lightweight and portable :airplane:
+  - Containers can be easily transferred between systems, cloud providers, or local development environments.
 
 :::
 
@@ -89,28 +88,28 @@ git clone https://github.com/ucla-oarc-hpc/WS_containers
 
 Containers allow you to:
 
-- Package applications with their dependencies
-- Easily deploy and run them consistently across different systems.
-
-:::
+- Package applications along with all their dependencies, configurations, libraries, and binaries. This comprehensive packaging ensures that the application runs consistently everywhere.
+- Easily deploy and run them across different systems, facilitating scalability and flexibility.
 
 <div style="display: flex; justify-content: center; align-items: center;">
-  <img src="container_apps.png"  />
+  <img src="container_apps.png" style="width:90%; height:90%;" />
 </div>
+
+:::
 
 ## Transferring Containers :truck:
 
 ::: { style="font-size: 0.75em" }
 
-Containers can be:
+Containers allow for:
 
-- Easily transferred between different HPC resources
-- Ensure consistent environment for your software
+- Easy transfer between different HPC resources.
+- Ensuring a consistent environment for your software.
 
 :::
 
 <div style="display: flex; justify-content: center; align-items: center;">
-  <img src="container_transfer.png" width="60%" />
+  <img src="container_transfer.png" width="70%" />
 </div>
 
 
@@ -120,16 +119,13 @@ Image Ref: [Hoffman2 source](https://idre.ucla.edu/featured/hoffman2-brings-new-
 
 ## Understanding Virtualization :desktop_computer:
 
-- Containers provide a lightweight, portable, and consistent environment across different platforms.
+Containers offer a lightweight, portable, and consistent environment across platforms. To fully grasp the concept of containers, it's essential to understand virtualization.
 
-
-- To Understand Containers, we will first talk about Virtualization
+**Virtualization** allows multiple operating systems to run simultaneously on a single physical machine. Each operating system operates as if it's the only one running on the hardware. While containers share the same OS kernel, virtual machines have their own OS and resources.
 
 <p align="center">
-  <img src="matrix.gif" alt="Matrix GIF" width="120%">
+  <img src="matrix.gif" alt="Matrix GIF">
 </p>
-
-![](matrix.gif)
 
 ::: footer
 GIF from https://giphy.com/
@@ -140,16 +136,19 @@ GIF from https://giphy.com/
 
 ::: { style="font-size: 0.75em" }
 
-1. Hardware Virtualization
+1. **Hardware Virtualization**
    - Creates virtual machines with independent OS and resources on a single physical host.
+   - Ideal for running different operating systems or when complete OS isolation is required.
    - Example: VirtualBox, VMware, AWS EC2
 
-2. Operating System Virtualization (Containers)
+2. **Operating System Virtualization (Containers)**
    - Allows multiple isolated user-space instances on the same OS kernel.
+   - Efficient and lightweight, suitable for microservices and scalable applications.
    - Example: Docker, Apptainer, Kubernetes
 
-3. Application Virtualization
+3. **Application Virtualization**
    - Packages applications and their dependencies for execution on any compatible system.
+   - Perfect for deploying apps without worrying about system compatibility or installing dependencies.
    - Example: App-V, ThinApp, Turbo
 
 :::
@@ -183,9 +182,9 @@ GIF from https://giphy.com/
 :::
 :::
 
-## Virtual Machines: Hardware-Level Virtualization :desktop_computer:
+## Virtual Machines: Hardware-Level :desktop_computer:
 
-::: { style="font-size: 0.70em" }
+::: { style="font-size: 0.60em" }
 
 - Virtual machines (VMs) emulate physical computers and run multiple operating systems on a single host. :arrow_double_up:
 - Each VM has its own virtual hardware, including CPU, memory, and storage. :floppy_disk:
@@ -197,6 +196,9 @@ GIF from https://giphy.com/
 ::: {.fragment}
 ::: columns
 ::: {.column  width="60%"}
+
+</br>
+
 -   Applications running inside of a VM are running on a completely
     different set of (virtual) resources
 
@@ -204,7 +206,11 @@ GIF from https://giphy.com/
 :::
 
 ::: {.column  width="40%"}
-![](VM2.png)
+
+<p align="center">
+  <img src="VM2.png" style="width:60%; height:60%;">
+</p>
+
 :::
 :::
 :::
@@ -223,6 +229,9 @@ GIF from https://giphy.com/
 ::: {.fragment}
 ::: columns
 ::: {.column  width="60%"}
+
+</br>
+
 -   Applications running inside of a container are running with the
     **SAME** kernal and physical resources as the host OS
 
@@ -230,7 +239,11 @@ GIF from https://giphy.com/
 :::
 
 ::: {.column  width="40%"}
-![](VMcontainer.png)
+
+<p align="center">
+  <img src="VMcontainer.png" style="width:60%; height:60%;">
+</p>
+
 :::
 :::
 :::
@@ -673,7 +686,7 @@ IT DOESN'T WORK!!! Need tensorflow installed!!!
 ## Example 1: TensorFlow (3)
 ### Interactive
 
-::: { style="font-size: 0.72em"}
+::: { style="font-size: 0.65em"}
 ::: columns 
 ::: {.column width="50%" .fragment}
 
@@ -908,7 +921,7 @@ qsub pytorch_gpu.job
 
 ## Example 3: Parallel MPI containers :globe_with_meridians:
 
-::: { style="font-size: 0.75em"}
+::: { style="font-size: 0.65em"}
 
 In this example, we'll run a parallel MPI container using [NWChem](https://nwchemgit.github.io/), a popular computational chemistry application.
 
@@ -970,7 +983,7 @@ qsub nwchem.job
 :::{.fragment}
 
 - :mag: Look out for a follow-up workshop
-  - [Container Building](https://idre.ucla.edu/calendar-event/building-containers-for-hpc)
+  - [Container Building](https://idre.ucla.edu/calendar-event/building-containers-for-hpc-2)
 
 :::
 :::
