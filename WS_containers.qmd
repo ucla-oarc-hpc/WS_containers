@@ -6,6 +6,8 @@ format:
   revealjs: 
     transition: slide
     theme: [custom.scss]
+    scrollable: true
+    self-contained: true
 from: markdown+emoji
 ---
 
@@ -45,6 +47,8 @@ like UCLA's Hoffman2
 
 ## Files for this Presentation :file_folder:
 
+::: { style="font-size: 0.85em" }
+
 This presentation can be found on our GitHub page
 
 - Viewing the slides 
@@ -59,13 +63,18 @@ This presentation can be found on our GitHub page
 git clone https://github.com/ucla-oarc-hpc/WS_containers
 ```
 
+:::
+
 # Containers: The Basics
 
 ## Containers: The Basics :package: 
 
 ### What Are Containers?
 
-::: { style="font-size: 0.75em" }
+::: { style="font-size: 0.65em" }
+
+::: columns
+::: {.column width="70%"}
 
 - Consistency across platforms :heavy_check_mark:
   - Software runs the same way, regardless of where the container is executed.
@@ -76,15 +85,18 @@ git clone https://github.com/ucla-oarc-hpc/WS_containers
 
 :::
 
+::: {.column width="30%"}
+
 <div style="display: flex; justify-content: center; align-items: center;">
   <img src="container_bare.png"  />
 </div>
-
-
+:::
+:::
+:::
 
 ## Containerizing Applications :hammer_and_wrench:
 
-::: { style="font-size: 0.75em" }
+::: { style="font-size: 0.65em" }
 
 Containers allow you to:
 
@@ -92,14 +104,17 @@ Containers allow you to:
 - Easily deploy and run them across different systems, facilitating scalability and flexibility.
 
 <div style="display: flex; justify-content: center; align-items: center;">
-  <img src="container_apps.png" style="width:90%; height:90%;" />
+  <img src="container_apps.png" style="width:70%; height:70%;" />
 </div>
 
 :::
 
 ## Transferring Containers :truck:
 
-::: { style="font-size: 0.75em" }
+
+
+::: columns
+::: {.column width="70%"}
 
 Containers allow for:
 
@@ -107,11 +122,13 @@ Containers allow for:
 - Ensuring a consistent environment for your software.
 
 :::
+::: {.column width="30%"}
 
-<div style="display: flex; justify-content: center; align-items: center;">
-  <img src="container_transfer.png" width="70%" />
-</div>
 
+![](container_transfer.png)
+
+:::
+:::
 
 ::: footer
 Image Ref: [Hoffman2 source](https://idre.ucla.edu/featured/hoffman2-brings-new-level-trust-researchers), [Stampede2 source](https://portal.tacc.utexas.edu/user-guides/stampede2)
@@ -134,7 +151,7 @@ GIF from https://giphy.com/
 ## Types of Virtualization :triangular_ruler:
 
 
-::: { style="font-size: 0.75em" }
+::: { style="font-size: 0.60em" }
 
 1. **Hardware Virtualization**
    - Creates virtual machines with independent OS and resources on a single physical host.
@@ -155,7 +172,7 @@ GIF from https://giphy.com/
 
 ## Bare Metal Setup: No Virtualization :computer:
 
-::: { style="font-size: 0.70em" }
+::: { style="font-size: 0.65em" }
 
 - 'Bare metal' refers to physical servers running directly on hardware without virtualization. :wrench:
 - Software and applications are installed directly on the host operating system. :cd:
@@ -268,7 +285,7 @@ GIF from https://giphy.com/
 
 ## Challenges with Software Installation :hammer_and_wrench:
 
-::: { style="font-size: 0.70em" }
+::: { style="font-size: 0.55em" }
 
 - Researchers face difficulties in managing software installations:
   - Spend time setting up software on Hoffman2
@@ -438,6 +455,8 @@ apptainer build myapp.sif myapp.def
 
 ## Common Usage Continued :wrench:
 
+::: {style="font-size: 0.80em" }
+
 Common Apptainer commands:
 
 3. Run a command within a container
@@ -459,6 +478,7 @@ apptainer shell mypython.sif
 
 ::: {.callout-note}
 Apptainer will NOT run on Hoffman2 login nodes.
+:::
 :::
 :::
 
@@ -551,7 +571,7 @@ Transfer
 **Run** :arrow_forward:
 :::
 
-::: {.column .fragment width="60%" style="font-size: 0.80em"}
+::: {.column .fragment width="60%" style="font-size: 0.70em"}
 Run Apptainer on your container:
 
 - Can run in an interactive (qrsh) session
@@ -584,6 +604,8 @@ qsub myjob.job
 
 ## **MAJOR TAKEWAY** :star:
 
+::: {style="font-size: 0.80em" }
+
 - Apptainer containers run like any other application. 
 - Run the same commands as you normally would
   - Just add an Apptainer command to any command you want to run inside the container
@@ -602,6 +624,7 @@ apptainer exec myPython.sif python3 test.py
 apptainer exec myR.sif R CMD BATCH test.R
 ```
 
+:::
 
 # Examples 
 
@@ -645,7 +668,7 @@ We will use TensorFlow to train a model from this dataset
 
 ## Example 1: TensorFlow (2) 
 
-::: {style="font-size: 0.75em"}
+::: {style="font-size: 0.70em"}
 
 - Go to `EX1` directory
 - Look at `tf-example.py`
