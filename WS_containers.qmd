@@ -364,7 +364,7 @@ HPC resources (like Hoffman2) are **SHARED** resources :busts_in_silhouette:
 ::: { style="font-size: 0.70em" }
 ::: columns
 ::: {.column width="40%"}
-![](word_cloud.png)
+![](wordcloud.png)
 
 
 Podman :package:
