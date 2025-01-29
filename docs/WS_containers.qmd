@@ -72,18 +72,22 @@ git clone https://github.com/ucla-oarc-hpc/WS_containers
 
 ### What Are Containers?
 
-::: { style="font-size: 0.65em" }
+::: { style="font-size: 0.60em" }
+
+Containers are a powerful way to install and run scientific software.
 
 ::: columns
 ::: {.column width="70%"}
 
-- Consistency across platforms :heavy_check_mark:
+- **Consistency** :heavy_check_mark:
   - Software runs the same way, regardless of where the container is executed.
-- Isolation from host system :lock:
+- **Isolation** :lock:
   - Containers do not interfere with other containers or with the host, ensuring a secure execution environment.
-- Lightweight and portable :airplane:
-  - Containers can be easily transferred between systems, cloud providers, or local development environments.
-
+- **Lightweight and portable** :airplane:
+  - Same containers can be easily transferred between computers, HPC systems, or cloud providers.
+- **Installing software** 🛠️ 
+  - Easily install and manage complex scientific software 
+  
 :::
 
 ::: {.column width="30%"}
@@ -95,7 +99,7 @@ git clone https://github.com/ucla-oarc-hpc/WS_containers
 :::
 :::
 
-## Containerizing Applications :hammer_and_wrench:
+## Containerizing Software :hammer_and_wrench:
 
 ::: { style="font-size: 0.65em" }
 
@@ -119,12 +123,11 @@ Containers allow you to:
 
 Containers allow for:
 
-- Easy transfer between different HPC resources.
-- Ensuring a consistent environment for your software.
+- Easy transfer between different HPC resources
+- Ensure consistent environment for your software
 
 :::
 ::: {.column width="30%"}
-
 
 ![](container_transfer.png)
 
@@ -135,7 +138,7 @@ Containers allow for:
 Image Ref: [Hoffman2 source](https://idre.ucla.edu/featured/hoffman2-brings-new-level-trust-researchers), [Stampede2 source](https://portal.tacc.utexas.edu/user-guides/stampede2)
 :::
 
-## Installing Software on Hoffman2
+## Traditional Installation 🏗️ 
 
 ::: { style="font-size: 0.65em" }
 
@@ -294,10 +297,12 @@ export $LD_LIBRARY_PATH=$HOME/myapps/lib:$LD_LIBRARY_PATH
 
 ::: { style="font-size: 0.65em" }
 
-To fully grasp the concept of containers, it's essential to understand virtualization.
+Before diving into containers, it’s important to first understand virtualization, the technology that paved the way.
 
-- Virtualization:
-  - Enables multiple isolated systems to run on a single physical machine.
+- What is Virtualization?
+  - Allows multiple isolated environments to run on a single physical machine.
+  - Improves resource efficiency by sharing hardware among different virtual machines.
+  - Forms the foundation for modern containerization.
 
 :::
 
@@ -319,7 +324,7 @@ GIF from https://giphy.com/
    - Ideal for running different operating systems or when complete OS isolation is required.
    - Example: VirtualBox, VMware, AWS EC2
 
-2. **Operating System Virtualization** - Containers
+2. **Operating System Virtualization** - Containers ✅
    - Allows multiple isolated user-space instances on the same OS kernel.
    - Efficient and lightweight, suitable for microservices and scalable applications.
    - Example: Docker, Apptainer, Kubernetes
@@ -335,12 +340,12 @@ GIF from https://giphy.com/
 
 ::: { style="font-size: 0.65em" }
 
-- 'Bare metal' refers to physical servers running directly on hardware without virtualization. :wrench:
-  - Much like running software on your laptop
-- Software is installed directly on the host operating system. :cd:
+- 'Bare metal' refers to physical servers running directly on hardware **without virtualization**. :wrench:
+  - Similar to running software directly on your laptop
+- Software is installed directly on the **host operating system**. :cd:
 - Uses the pysical hardware such as CPU, memory, and storage  :bar_chart:
-- Advantages: High performance, direct access to hardware, low overhead. :+1:
-- Limitations: Less flexibility, limited isolation between applications, potential underutilization of resources. :-1:
+- ✨ Advantages: High performance, direct access to hardware, low overhead. :+1:
+- ⚠️ Limitations: Less flexibility, limited isolation between applications, potential underutilization of resources. :-1:
 
 ::: {.fragment}
 ::: columns
@@ -433,7 +438,7 @@ GIF from https://giphy.com/
 :::
 ::: {.column width="33%"}
 
-Docker :whale:
+[Docker](https://www.docker.com/) :whale:
 
 - Popular containerization software
 - Many popular cloud container registries to store Docker containers:
@@ -445,7 +450,7 @@ Docker :whale:
 
 ::: {.column width="33%"}
 
-Podman :package:
+[Podman](https://podman.io/) :package:
 
 - Similar syntax as with Docker
 - Doesn't have root daemon processes
@@ -868,9 +873,14 @@ apptainer pull docker://tensorflow/tensorflow:2.7.1
 
 - We see a file named, `tensorflow_2.7.1.sif`
    - This SIF file is the container
-   - This container is a OS with python and TF installed inside
+   - This container will have an Operating System with Python and TensorFlow already installed inside
 
 :::
+:::
+
+## Example 1: TensorFlow (4)
+
+::: { style="font-size: 0.65em"}
 ::: columns 
 ::: {.column width="50%" .fragment}
 
@@ -888,7 +898,7 @@ apptainer shell tensorflow_2.7.1.sif
 ::: columns 
 ::: {.column width="50%" .fragment}
 
-- Now we are in the container, we can run python with TF!
+- Now we are in the container, we can run python with TensorFlow!
 
 ::: 
 ::: {.column width="50%" .fragment}
@@ -904,14 +914,14 @@ python3 tf-example.py
 ::: {.callout-tip}
 
 - See that we didn't need to load any python module!
-- We didn't need to install any TF packages ourselves!!
-- Everything is inside the container!
+- This Python is resides in the container
+- We didn't need to install any TensorFlow packages ourselves!!
 
 :::
 :::
 :::
 
-## Example 1: TensorFlow (4)
+## Example 1: TensorFlow (5)
 ### Batch
 
 ::: { style="font-size: 0.72em"}
@@ -973,7 +983,7 @@ qsub tf-example.job
 
 ## Example 2: GPU job (2)
 
-::: { style="font-size: 0.75em"}
+::: { style="font-size: 0.70em"}
 
 Let's run `python3 pytorch_gpu.py` on a GPU node
 
@@ -1053,9 +1063,9 @@ qsub pytorch_gpu.job
 
 ## Example 3: Parallel MPI container :gear:
 
-::: { style="font-size: 0.75em"}
+::: { style="font-size: 0.65em"}
 
-You can run MPI parallel software inside of containers. This example will compile and run a simple MPI code with a container.
+You can run MPI parallel software inside of containers. This example will compile and run a simple MPI code with a MPI-enabled container.
 
 Commonly, containers for MPI software that you would find (or build) will have MPI installed inside the container.
 
@@ -1065,9 +1075,22 @@ This Hybrid apporah will have the MPI build inside the container rely on the MPI
 
 :::
 
+:::: columns
+::: column
+
+<img src="oneapi.png" style="width:60%">
+
+:::
+::: column
+
+<img src="openmpi.png" style="width:30%">
+
+:::
+::::
+
 ## Example 3: Running Parallel code :globe_with_meridians:
 
-::: { style="font-size: 0.65em"}
+::: { style="font-size: 0.55em"}
 :::: columns 
 ::: {.column width="50%"}
 
@@ -1239,7 +1262,9 @@ mpirun -np 5 apptainer exec $H2_CONTAINER_LOC/h2-nwchem_7.0.2.sif nwchem water.n
 :::
 ::::
 
-### Batch Job
+::: {.fragment}
+
+### Batch Job 
 
 :::: columns
 ::: column
@@ -1255,6 +1280,7 @@ qsub nwchem.job
 
 :::
 ::::
+:::
 :::
 
 ## Considerations and Best Practices
@@ -1284,7 +1310,38 @@ qsub nwchem.job
 :::
 :::
 
-# Thank you!
+## Workshop Summary :rocket:
+
+::: { style="font-size: 0.60em"}
+
+:::: columns
+::: column
+
+- 🔹 What We Learned
+  - ✅ Traditional Software Installation vs. Containers
+  - ✅ Why Containers? 
+    - Portability, Reproducibility, Ease of Use
+  - ✅ Understanding Virtualization & HPC Challenges
+  - ✅ Apptainer Basics & Running Containers on Hoffman2
+  - ✅ Practical Examples:
+    - TensorFlow, PyTorch (GPU), MPI 
+
+:::
+::: column
+
+- 💡 Key Takeaways
+  - 🔹 Containers simplify software installation & execution
+  - 🔹 Use Apptainer to run pre-built software on HPC
+  - 🔹 Bring Your Own OS & Dependencies
+    - No Admin Required
+  - 🔹 Share & Reuse Containers to Save Time. 
+  - 🔹 Next Step: Build Your Own Containers!
+
+:::
+::::
+:::
+
+# Thank you! :heart:
 
 Questions? Comments? :thinking:
 
