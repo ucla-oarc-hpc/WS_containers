@@ -3,7 +3,7 @@
 #$ -o joblog.$JOB_ID
 #$ -j y
 #$ -l h_rt=0:30:00,h_data=20G
-#$ -l gpu,V100
+#$ -l gpu,A100,cuda=1
 
 
 # load the job environment:

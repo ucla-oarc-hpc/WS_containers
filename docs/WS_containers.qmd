@@ -985,7 +985,7 @@ Let's run `python3 pytorch_gpu.py` on a GPU node
 ::: {.column width="50%" .fragment}
 
 ```{.bash}
-qrsh -l h_data=20G,gpu,V100
+qrsh -l h_data=20G,gpu,V100,cuda=1
 ```
 
 :::
@@ -1051,20 +1051,116 @@ qsub pytorch_gpu.job
 :::
 :::
 
-## Example 3: Parallel MPI containers :globe_with_meridians:
+## Example 3: Parallel MPI container :gear:
+
+::: { style="font-size: 0.75em"}
+
+You can run MPI parallel software inside of containers. This example will compile and run a simple MPI code with a container.
+
+Commonly, containers for MPI software that you would find (or build) will have MPI installed inside the container.
+
+You will also need to have a MPI build outside the container as well.
+
+This Hybrid apporah will have the MPI build inside the container rely on the MPI implementation available outside on the host system
+
+:::
+
+## Example 3: Running Parallel code :globe_with_meridians:
 
 ::: { style="font-size: 0.65em"}
+:::: columns 
+::: {.column width="50%"}
 
-In this example, we'll run a parallel MPI container using [NWChem](https://nwchemgit.github.io/), a popular computational chemistry application.
+- Load both the apptainer and intel modules
+  - The intel (oneAPI) module will load IntelMPI on the outside host
 
-Many applications use MPI to run across multiple CPUs, and NWChem is one of them.
+::: 
+::: {.column width="50%"}
+
+```{.bash}
+qrsh -l h_data=10,arch=intel-gold* -pe shared 3
+module load apptainer
+module load intel/2022.1.1
+```
+
+:::
+::::
+:::: columns 
+::: {.column width="50%"}
+
+- Pull oneAPI HPC KIT from dockerhub
+  - Container with IntelMPI compilers, libraries, and tools for HPC
+  - Creates `oneapi-hpckit_2025.0.2-0-devel-ubuntu24.04.sif` container file
+
+:::
+::: {.column width="50%"}
+
+```{.bash}
+apptainer pull docker://docker.io/intel/oneapi-hpckit:2025.0.2-0-devel-ubuntu24.04
+```
+
+:::
+::::
+:::: columns 
+::: {.column width="50%"}
+
+- Compile MPI code
+  - Run `mpiicx -o myMPIcode.x myMPIcode.c` inside the container
+
+::: 
+::: {.column width="50%"}
+
+```{.bash}
+apptainer exec oneapi-hpckit_2025.0.2-0-devel-ubuntu24.04.sif mpiicx -o myMPIcode.x myMPIcode.c
+```
+
+:::
+::::
+:::: columns 
+::: {.column width="50%"}
+
+- Execute MPI Code
+  - Run `./myMPIcode.x` inside the container
+
+::: 
+::: {.column width="50%"}
+
+```{.bash}
+apptainer exec oneapi-hpckit_2025.0.2-0-devel-ubuntu24.04.sif  ./myMPIcode.x
+```
+
+:::
+::::
+:::
+
+## Example 4: MPI with NWChem :battery:
+
+::: { style="font-size: 0.72em"}
+
+:::: columns
+::: {.column width="60%"}
+
+In this example, we'll run a parallel MPI container using [NWChem](https://nwchemgit.github.io/), a popular chemistry software.
+
+We will use a container with NWChem, built with MPI to run across multiple CPUs.
+
+:::
+::: {.column width="40%"}
+
+![](nwchem.png)
+
+:::
+::::
 
 :::{.fragment}
 
-- On Hoffman2, a NWChem container with MPI has already been built
-  - `$H2_CONTAINER_LOC/h2-nwchem_7.0.2.sif`
+:::: columns
+::: column
 
 Typically, we will run NWChem like this:
+
+:::
+::: column
 
 ```{.bash}
 module load intel/2022.1.1
@@ -1072,25 +1168,93 @@ module load nwchem/7.0.2
 `which mpirun` -np 5 nwchem water.nw > water.out
 ```
 
+:::
+::::
+:::
+:::{.fragment}
+
+- On Hoffman2, a NWChem container with MPI has already been built
+  - `$H2_CONTAINER_LOC/h2-nwchem_7.0.2.sif`
+
+::: {.callout-note}
+
+- Location of Hoffman2 collected containers
+  - `echo $H2_CONTAINER_LOC`
+  
+:::
+:::
+:::
+
+## Example 4: Running NWChem
+
+::: { style="font-size: 0.60em"}
+
+### Interactive Job
+
 To run inside the container:
 
-- Load the intel module
-  - Sets up (INTEL)MPI on the host (outside the container)
-- Add `mpirun` in front of `apptainer exec`
+:::: columns
+::: column
+
+- Request multiple cores with qrsh
+
+:::
+::: column
 
 ```{.bash}
 qrsh -l h_data=10,arch=intel-gold* -pe shared 5
-module load intel/2022.1.1
-`which mpirun` -np 5 apptainer exec $H2_CONTAINER_LOC/h2-nwchem_7.0.2.sif nwchem water.nw  > water.out
 ```
 
-A example batch job is located in `EX3/nwchem.job`
+:::
+::::
+:::: columns
+::: column 
+
+- Load the apptainer and intel module
+  - Sets up INTELMPI on the host (outside the container)
+
+:::
+::: column
+
+```{.bash}
+module load apptainer
+module load intel/2022.1.1
+```
+
+:::
+::::
+:::: columns
+::: column
+
+- Run NWChem software 
+  - Add `mpirun -np 5` in front of `apptainer exec`
+
+:::
+::: column
+
+```{.bash}
+mpirun -np 5 apptainer exec $H2_CONTAINER_LOC/h2-nwchem_7.0.2.sif nwchem water.nw  > water.out
+```
+
+:::
+::::
+
+### Batch Job
+
+:::: columns
+::: column
+
+- A example batch job is located in `EX4/nwchem.job`
+
+:::
+::: column
 
 ```{.bash}
 qsub nwchem.job
 ```
 
 :::
+::::
 :::
 
 ## Considerations and Best Practices
